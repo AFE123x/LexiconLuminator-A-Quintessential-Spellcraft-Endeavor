@@ -2,21 +2,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 
 int main(int argc, char *argv[]) {
 
-int number = *argv[1];
-
-
-    if (number == 49) {
-        printf("this is just a 1???");
-    } else{
-        printf("WOAH THATS NOT A 1!");
-        printf("number: %d", number);
-        return EXIT_FAILURE;
+//print out the size of a file with stat
+    struct stat buffer;
+    int exist = stat(argv[1], &buffer);
+    if (exist == 0) {
+        printf("The file exists\n");
+        printf("The size of the file is: %ld\n", buffer.st_size);
+    } else {
+        printf("The file does not exist\n");
     }
-
-    printf("we didnt even go in the if statement...");
-
     return 0;
 }
