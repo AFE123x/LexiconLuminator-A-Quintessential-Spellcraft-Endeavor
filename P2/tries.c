@@ -35,7 +35,7 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
     curr = (struct Node*)malloc(sizeof(struct Node));
     curr->c = c;
     curr->center = curr->left = curr->right = NULL;
-    if(word[index] == '\0'){
+    if(word[index + 1] == '\0'){
         curr->isEnd = 1;
         return curr;
     }
@@ -50,7 +50,7 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
    else if(c > curr->c){
     curr->right = puthelp(curr->right,word,index+1);
    }
-   else if(word[index] != '\0'){
+   else if(word[index + 1] != '\0'){
     curr->center = puthelp(curr->center,word,index+1);
    }
    else{
@@ -84,7 +84,7 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
     } else if (c > curr->c) {
         return get_helper(curr->right, word, index + 1);
     } else {
-        if (word[index] == '\0') {
+        if (word[index + 1] == '\0') {
             // Reached the end of the word
             if (curr->isEnd) {
                 return curr; // Found the word

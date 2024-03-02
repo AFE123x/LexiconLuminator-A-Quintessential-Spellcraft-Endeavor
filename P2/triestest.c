@@ -17,4 +17,7 @@ int main(int argc, char** argv){
     if(exists("String")){
         printf("string now exists\n");
     }
+    if(!exists("Str")){
+        printf("this shouldn't exist\n");
+    }
 }
