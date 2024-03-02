@@ -1,23 +1,47 @@
 #include "tries.h"
 #include<stdio.h>
+#include<stdlib.h>
+#define WORDLENGTH 17
+/**
+ * This is a testclient to test the functionality of the tries
+ * implementation. tests for sanitition faults, segmentation,
+ * and program runs as intended.
+ *
+ * @author Arun Felix, Kareem Jackson
+*/
+char** randomwords;
+char* randomword(){
+    char* word = (char*)malloc(sizeof(char) * WORDLENGTH);
+    for(int i = 0; i < WORDLENGTH - 1; i++){
 
+        word[i] = (rand() % 26) + 97;
+        // printf("our random character%c\n",word[i]);
+    }
+    word[WORDLENGTH - 1] = '\0';
+    printf("our random word is: %s\n",word);
+    return word;
+}
 int main(int argc, char** argv){
-    put("String one");
-    put("String two");
-    if(exists("String one")){
-        printf("String one exists\n");
+    if(argc < 2){
+        fprintf(stderr,"./triesttest {number of variables}");
     }
-    if(exists("String two")){
-        printf("String two also exists\n");
+    int arraysize = atoi(argv[1]);
+    randomwords = malloc(sizeof(char*) * arraysize);
+    for(int i = 0; i < arraysize; i++){
+        randomwords[i] = randomword();
+        put(randomwords[i]);
     }
-    if(!exists("String")){
-        printf("string doesn't exist\n");
+    // print();
+    for(int i = 0; i < arraysize; i++){
+        if(!exists(randomwords[i])){
+            printf("incorrect: expected: %s\n",randomwords[i]);
+        }
     }
-    put("String");
-    if(exists("String")){
-        printf("string now exists\n");
+    for(int i = 0; i < arraysize; i++){
+        free(randomwords[i]);
     }
-    if(!exists("Str")){
-        printf("this shouldn't exist\n");
-    }
+    free(randomwords);
+
+
+    destroy();
 }

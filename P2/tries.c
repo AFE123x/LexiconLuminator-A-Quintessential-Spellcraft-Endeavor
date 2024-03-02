@@ -1,6 +1,15 @@
+/**
+ * implementation of tries data structure. This will
+ * allow us to find correct spelling for words.
+*/
 #include "tries.h"
 #include<stdio.h>
 #include<stdlib.h>
+
+/**
+ * enable debugging mode, which will enable print statements
+ * To use, at -DDEBUG to compilation
+*/
 #ifndef DEBUG
 
     #define DEBUGMODE 0
@@ -10,6 +19,9 @@
     #define DEBUGMODE 1
 
 #endif
+/**Our node class, 3 nodes for a three way
+ * tries.
+*/
 struct Node{
     char c;
     char isEnd;
@@ -18,8 +30,18 @@ struct Node{
     struct Node* right;
 };
 
-struct Node* head;
+struct Node* head; //our head instance
+
 //========================helper functions================================
+
+/**
+ * This function will take our string and make it
+ * all lowercase. We took advantage of the ascii 
+ * table, and used that to convert capital letters
+ * to lowercase.
+ * @param word, a reference to a string. We modify
+ * the current string.
+*/
 static void tolowercase(char* word){
     int length = strlen(word);
     for(int i = 0; i < length; i++){
@@ -29,6 +51,14 @@ static void tolowercase(char* word){
         }
     }
 }
+
+/**
+ * A helper function to actually put our new word in the trie.
+ * @param curr: the reference to a Node.
+ * @param word: a string buffer
+ * @param index: indicates what character to point at. 
+ * @return a Node with new data.
+*/
 struct Node* puthelp(struct Node* curr, char* word, int index) {
     char c = word[index];
    if(curr == NULL){
@@ -45,10 +75,10 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
    }
    if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
    if(c < curr->c){
-    curr->left = puthelp(curr->left,word,index + 1);
+    curr->left = puthelp(curr->left,word,index);
    }
    else if(c > curr->c){
-    curr->right = puthelp(curr->right,word,index+1);
+    curr->right = puthelp(curr->right,word,index);
    }
    else if(word[index + 1] != '\0'){
     curr->center = puthelp(curr->center,word,index+1);
@@ -58,7 +88,12 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
    }
    return curr;
 }
+/**
+ * Helper method for freeing up our memory.
+ * @param curr node, which holds reference 
+ * to heap allocated node.
 
+*/
 void destroy_helper(struct Node* curr){
     if(curr == NULL) return;
     destroy_helper(curr->left);
@@ -66,12 +101,13 @@ void destroy_helper(struct Node* curr){
     destroy_helper(curr->right);
     free(curr);
 }
-void traverseboi(struct Node* curr){
-    if(curr == NULL) return;
-    traverseboi(curr->left);
-    traverseboi(curr->center);
-    traverseboi(curr->right);
-}
+
+/**
+ * a helper function to determine if string exists.
+ * @param curr: a node reference
+ * @param word: a word we're looking for
+ * @param index: indicates which character to look at.
+*/
 struct Node* get_helper(struct Node* curr, char* word, int index) {
     if (curr == NULL) {
         return NULL;
@@ -80,9 +116,9 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
     char c = word[index];
     if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
     if (c < curr->c) {
-        return get_helper(curr->left, word, index + 1);
+        return get_helper(curr->left, word, index);
     } else if (c > curr->c) {
-        return get_helper(curr->right, word, index + 1);
+        return get_helper(curr->right, word, index);
     } else {
         if (word[index + 1] == '\0') {
             // Reached the end of the word
@@ -120,10 +156,41 @@ char* get(char* word){
 }
 void destroy(){
     destroy_helper(head);
-    printf("Freeing complete\n");
 }
 char exists(char* word){
     return get(word) != NULL;
+}
+//====================================troubleshooting===============================================
+
+void printTree(struct Node* root, int space) {
+    // Base case
+    if (root == NULL)
+        return;
+
+    // Increase distance between levels
+    space += 5;
+
+    // Process right child first
+    printTree(root->right, space);
+
+    // Print current node after space
+    printf("\n");
+    for (int i = 5; i < space; i++)
+        printf(" ");
+    printf("%c\n", root->c);
+
+    // Print isEnd flag
+    for (int i = 5; i < space; i++)
+        printf(" ");
+    printf("%c\n", root->isEnd);
+
+    // Print left and center children
+    printTree(root->center, space);
+    printTree(root->left, space);
+}
+
+void print(){
+    printTree(head,0);
 }
 
 
