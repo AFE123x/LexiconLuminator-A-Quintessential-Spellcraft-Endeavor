@@ -1,7 +1,15 @@
 #include "tries.h"
 #include<stdio.h>
 #include<stdlib.h>
+#ifndef DEBUG
 
+    #define DEBUGMODE 0
+
+#else
+
+    #define DEBUGMODE 1
+
+#endif
 struct Node{
     char c;
     char isEnd;
@@ -12,42 +20,43 @@ struct Node{
 
 struct Node* head;
 //========================helper functions================================
-
-struct Node* puthelp(struct Node* curr, char* word, int index, int length) {
-    printf("at index %d\n",index);
-    if (index == length - 1) {
-        // Reached the end of the word
-        if (curr == NULL) {
-            // Allocate memory for a new node
-            curr = (struct Node*)malloc(sizeof(struct Node));
-            curr->c = word[index];
-            curr->isEnd = 1;
-            curr->left = curr->center = curr->right = NULL;
-        } else {
-            // Mark this node as the end of a word
-            curr->isEnd = 1;
+static void tolowercase(char* word){
+    int length = strlen(word);
+    for(int i = 0; i < length; i++){
+        if(word[i] > 64 && word[i] < 91){
+            char temp = word[i] + 32;
+            word[i] = temp;
         }
+    }
+}
+struct Node* puthelp(struct Node* curr, char* word, int index) {
+    char c = word[index];
+   if(curr == NULL){
+    curr = (struct Node*)malloc(sizeof(struct Node));
+    curr->c = c;
+    curr->center = curr->left = curr->right = NULL;
+    if(word[index] == '\0'){
+        curr->isEnd = 1;
         return curr;
     }
-
-    char c = word[index];
-    if (curr == NULL) {
-        // Allocate memory for a new node
-        curr = (struct Node*)malloc(sizeof(struct Node));
-        curr->c = c;
+    else{
         curr->isEnd = 0;
-        curr->left = curr->center = curr->right = NULL;
     }
-
-    if (c < curr->c) {
-        curr->left = puthelp(curr->left, word, index + 1, length);
-    } else if (c > curr->c) {
-        curr->right = puthelp(curr->right, word, index + 1, length);
-    } else {
-        curr->center = puthelp(curr->center, word, index + 1, length);
-    }
-    
-    return curr;
+   }
+   if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
+   if(c < curr->c){
+    curr->left = puthelp(curr->left,word,index + 1);
+   }
+   else if(c > curr->c){
+    curr->right = puthelp(curr->right,word,index+1);
+   }
+   else if(word[index] != '\0'){
+    curr->center = puthelp(curr->center,word,index+1);
+   }
+   else{
+    curr->isEnd = 1;
+   }
+   return curr;
 }
 
 void destroy_helper(struct Node* curr){
@@ -69,13 +78,13 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
     }
 
     char c = word[index];
-    printf("Find: %c",curr->c);
+    if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
     if (c < curr->c) {
-        return get_helper(curr->left, word, index);
+        return get_helper(curr->left, word, index + 1);
     } else if (c > curr->c) {
-        return get_helper(curr->right, word, index);
+        return get_helper(curr->right, word, index + 1);
     } else {
-        if (word[index + 1] == '\0') {
+        if (word[index] == '\0') {
             // Reached the end of the word
             if (curr->isEnd) {
                 return curr; // Found the word
@@ -92,11 +101,16 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
 //========================client functions================================
 
 void put(char* word){
- head = puthelp(head,word,0,strlen(word));
+    char buffer[strlen(word) + 1];
+    strcpy(buffer,word);
+    tolowercase(buffer);
+    head = puthelp(head,buffer,0);
 }
 char* get(char* word){
-    struct Node* temp = get_helper(head,word,0);
-    printf("temp: %p\n",temp);
+    char buffer[strlen(word) + 1];
+    strcpy(buffer,word);
+    tolowercase(buffer);
+    struct Node* temp = get_helper(head,buffer,0);
     if(temp != NULL){
         return word;
     }
