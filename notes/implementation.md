@@ -24,7 +24,7 @@ and the following private API:
 
 ```c
 struct Node* put(struct Node* curr, char* word, int index, int length); //actual put method. include string.h, use strlen.
-char* tolowercase(char* buffer); //turn everything to lowercase.
+char* tolowercase(char* buffer); //turn everything to lowercase. put in splchk instead.
 ```
 
 
@@ -89,3 +89,9 @@ private Node get(Node x, String key, int d){
 
 
 ***TO DO: FIGURE OUT HOW TO AUTOCORRECT?***
+
+
+## Abstraction over read
+
+- let's say we want to read one word at a time, how to do this?
+    - read_word() function?

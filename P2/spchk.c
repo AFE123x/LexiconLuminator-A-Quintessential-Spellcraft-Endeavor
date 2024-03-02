@@ -14,7 +14,9 @@ enum ERROR_CODES {
     NOT_FILE,
     ARG_EMPTY,
 };
-
+static char* tolowercase(char* buffer){
+    
+}
 void PRINTERR(enum ERROR_CODES error, char *value, char *argv[]) {
     switch (error) {
         case NOT_DIRECTORY:
