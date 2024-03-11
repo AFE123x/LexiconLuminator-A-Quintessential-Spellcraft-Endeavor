@@ -23,7 +23,8 @@ char* randomword(){
 }
 int main(int argc, char** argv){
     if(argc < 2){
-        fprintf(stderr,"./triesttest {number of variables}");
+        fprintf(stderr,"./triesttest {number of variables}\n");
+        return EXIT_FAILURE;
     }
     int arraysize = atoi(argv[1]);
     randomwords = malloc(sizeof(char*) * arraysize);

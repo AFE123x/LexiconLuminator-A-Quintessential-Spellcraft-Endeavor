@@ -34,23 +34,6 @@ struct Node* head; //our head instance
 
 //========================helper functions================================
 
-/**
- * This function will take our string and make it
- * all lowercase. We took advantage of the ascii 
- * table, and used that to convert capital letters
- * to lowercase.
- * @param word, a reference to a string. We modify
- * the current string.
-*/
-static void tolowercase(char* word){
-    int length = strlen(word);
-    for(int i = 0; i < length; i++){
-        if(word[i] > 64 && word[i] < 91){
-            char temp = word[i] + 32;
-            word[i] = temp;
-        }
-    }
-}
 
 /**
  * A helper function to actually put our new word in the trie.
@@ -139,13 +122,11 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
 void put(char* word){
     char buffer[strlen(word) + 1];
     strcpy(buffer,word);
-    tolowercase(buffer);
     head = puthelp(head,buffer,0);
 }
 char* get(char* word){
     char buffer[strlen(word) + 1];
     strcpy(buffer,word);
-    tolowercase(buffer);
     struct Node* temp = get_helper(head,buffer,0);
     if(temp != NULL){
         return word;
