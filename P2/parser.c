@@ -8,9 +8,10 @@ used to parse a given dictionary file for each of its words
 #include<unistd.h>
 #include<stdio.h>
 #include<stdlib.h>
-int fd;
+#include "./tries.h"
+static int fd;
 
-char* getword(){
+static char* getword(){
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
     char c[1]; 
@@ -47,18 +48,11 @@ char* getword(){
     mystring = newstring;
     return mystring;
 }
-int main(int argc, const char** argv){\
-    
-    if(argc < 2){
-        fprintf(stderr,"./parser {dictionary file name}\n");
-        return EXIT_FAILURE;
-    }
-
-    fd = open(argv[1],O_RDONLY);
-    
-    if(fd == -1){
+void parsefile(char* filepath){
+    fd = open(filepath,O_RDONLY);
+     if(fd == -1){
         perror("unable to open file\n");
-        return EXIT_FAILURE;
+        exit(EXIT_FAILURE);
     }
 
     char* mystring = getword();
@@ -66,9 +60,11 @@ int main(int argc, const char** argv){\
 
     while(mystring != NULL){
         printf("iteration %d: %s\n",i++,mystring);
+        put(mystring);
+
         free(mystring);
         mystring = getword();
     }
 
-    return EXIT_SUCCESS;
 }
+

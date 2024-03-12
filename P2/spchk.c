@@ -7,6 +7,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "./parser.h"
+#include "./tries.h"
+
+
 
 //Error handling for cases with directory
 //Might include some for different file types
@@ -107,15 +111,21 @@ void spellCheck(char *dict, char *file) {
                     printf("%s\n", entry->d_name);
                     
                     //NOW we will loop through this directory and compare each "entry->d_name" to the dictionary
-
+                    size_t file_name = strlen(entry->d_name);
+                    size_t directory_path = strlen(file);
+                    char* fullname = malloc(sizeof(char) * (file_name + directory_path + 10));
+                    strcpy(fullname,file);
+                    strcat(fullname,entry->d_name);
+                    printf("fullname: %s\n",fullname);
+                    parsefile(fullname);
                     
-
-
+                    free(fullname);
                 }
             }
         }
         // Close the directory
         closedir(dir);
+
 
     }
 
@@ -160,7 +170,7 @@ int main(int argc, char *argv[]) {
             //compare the dictionary to the file or directory
             spellCheck(argv[1], argv[i+2]);
         }
-
+        destroy();
     }
 
 
