@@ -42,21 +42,27 @@ char* getword(){
     return mystring;
 }
 int main(int argc, const char** argv){\
+    
     if(argc < 2){
         fprintf(stderr,"./parser {dictionary file name}\n");
         return EXIT_FAILURE;
     }
+    
     fd = open(argv[1],O_RDONLY);
+    
     if(fd == -1){
         perror("unable to open file\n");
         return EXIT_FAILURE;
     }
+
     char* mystring = getword();
     int i = 0;
+
     while(mystring != NULL){
-    printf("iteration %d: %s\n",i++,mystring);
-    free(mystring);
-    mystring = getword();
+        printf("iteration %d: %s\n",i++,mystring);
+        free(mystring);
+        mystring = getword();
     }
+
     return EXIT_SUCCESS;
 }
