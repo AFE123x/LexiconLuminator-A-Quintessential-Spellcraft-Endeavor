@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -13,6 +14,7 @@ enum ERROR_CODES {
     NOT_DIRECTORY,
     NOT_FILE,
     ARG_EMPTY,
+    DNE,
 };
 static char* tolowercase(char* buffer){
     
@@ -28,12 +30,16 @@ void PRINTERR(enum ERROR_CODES error, char *value, char *argv[]) {
         case ARG_EMPTY:
             printf("Error: The given argument(%s) is empty. You must provide an argument that is not empty\n", value);
             break;
+        case DNE:
+            printf("Error: The given argument(%s) does not exist. Make sure your path is correct\n", value);
+            break;
     }
 }
 
 //call functions ahead of time
 void DTE(char *arg);
 void isEmpty(char *arg);
+void spellCheck(char *dict, char *file);
 
 
 
@@ -43,10 +49,10 @@ void DTE(char *arg) {
     struct stat buffer;
     int exist = stat(arg, &buffer);
     if (exist == 0) {
-        printf("The file exists\n");
+        //printf("The file exists\n");
         isEmpty(arg);
     } else {
-        printf("The file or directory %s does not exist\n", arg);
+        PRINTERR(DNE, arg, NULL);
         exit(EXIT_FAILURE);
     }
 }
@@ -62,9 +68,9 @@ void isEmpty(char *arg) {
                //printf("the dir is empty\n");
                 exit(EXIT_FAILURE);
             }
-            //make some form of directory handeling here
-            //probably pass into another function that will run through all the files in the directory
+            //printf("The Directory is not empty\n");
 
+            //check if the files within the directory are empty or something I would want to read.
         }
 
         if (S_ISREG(buffer.st_mode)) {
@@ -73,16 +79,51 @@ void isEmpty(char *arg) {
                 //printf("the file is empty\n");
                 exit(EXIT_FAILURE);
             }
-            //make some form of file handeling here
-            //will pass to another function that reads the file and compares it with the dictionary
-
-
-
+            //printf("The File is not empty\n");
         }
-        // printf("directory size is: %ld\n", buffer.st_size);
-        // printf("The Directory is not empty\n");
 }
 
+void spellCheck(char *dict, char *file) {
+    struct stat buffer;
+    stat(file, &buffer);
+
+    //if the given file is a directory, run the spell check on all the files within the directory
+    if (S_ISDIR(buffer.st_mode)) {
+        //open the directory
+        //kind of redundant to do this since we already checked if it existed but
+        //I want to make sure it is a directory
+        DIR *dir = opendir(file);
+        if (dir == NULL) {
+            perror("Unable to open directory");
+            exit(EXIT_FAILURE);
+        }
+        // Read each entry in the directory
+        struct dirent *entry;
+        while ((entry = readdir(dir)) != NULL) {
+            // Ignore special entries "." and ".."
+            if (entry->d_name[0] != '.') {
+                //spell check only the text files or no extension files
+                if (strrchr(entry->d_name, '.') == NULL || strcmp(strrchr(entry->d_name, '.'), ".txt") == 0) {
+                    //printf("%s\n", entry->d_name);
+                    
+                    //NOW we will loop through this directory and compare each "entry->d_name" to the dictionary
+
+                }
+            }
+        }
+        // Close the directory
+        closedir(dir);
+
+    }
+
+    //if the given file is a regular file, run the spell check on the file
+    if (S_ISREG(buffer.st_mode)) {
+        //run the spell check comparison on the given file "file"
+        //I am going to HOPE that the given file is a txt or a file with no extension
+        //since the file is given directly by the user.
+    }
+
+}
 //do we have to check and make sure if they are anything other than directory or file? probably
 
 
@@ -93,23 +134,8 @@ int main(int argc, char *argv[]) {
         printf("Usage: spchk <Dictionary Path> <Directory1 or File1 Path> <Directory2 or File2 Path> ... <DirectoryN or FileN Path>\n");
         return 1;
     }
-    //if argc is = 2, that means the passed in argument SHOULD be a directory
-    //check if the file is a directory
-    //this code is from when I did not fully understand the assignment I realize
-    // I thought we were only checking for directories
-    // if (argc == 2) {
-    //     //check if the given argument is a directory
-    //     isDirectory(argv[1]);
-    //     //check if the directory is empty
-    //     isEmpty(argv[1]);
 
-
-    //     exit(EXIT_SUCCESS);
-    // }
-
-
-
-    //argv[0] is the name of the program
+    //argv[0] is the program
     //argv[1] is the dictionary
     //argv[2+] is a directory or file
     if (argc > 2) {
@@ -117,16 +143,21 @@ int main(int argc, char *argv[]) {
         //iterate through the arguments passed in
         for (int i = 0; i < argc-1; i++) {
             //check if the given arguments are valid directories or files AND if they are empty
+            //as of this moment I took off checking if the given argument is empty.
+            //technically if they are empty it shouldnt actually interfere with the running of the program
+            //but maybe ill add a print or warning that the given argument is empty
             DTE(argv[i+1]);
         }
         //print how many files there are
-        printf("There were %d files passed into the program\n", argc-1);
+        printf("There were %d files passed into the program. (counting the dictionary)\n", argc-1);
 
-        //we COULD make it where if the first argument is proven to be a directory
-        //we dont require the user to put the path to the next file, but just the name of the file instead.
-        //I believe that would require some file appending skills though.
 
-        struct stat s;
+        //now we compare each file or directory to the dictionary
+        for (int i = 0; i < argc-1; i++) {
+            //compare the dictionary to the file or directory
+            spellCheck(argv[1], argv[i+2]);
+        }
+
     }
 
 

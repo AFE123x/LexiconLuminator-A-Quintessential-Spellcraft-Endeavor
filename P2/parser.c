@@ -1,3 +1,9 @@
+/*
+used to parse a given dictionary file for each of its words
+*/
+
+
+
 #include<fcntl.h>
 #include<unistd.h>
 #include<stdio.h>
@@ -47,7 +53,7 @@ int main(int argc, const char** argv){\
         fprintf(stderr,"./parser {dictionary file name}\n");
         return EXIT_FAILURE;
     }
-    
+
     fd = open(argv[1],O_RDONLY);
     
     if(fd == -1){
