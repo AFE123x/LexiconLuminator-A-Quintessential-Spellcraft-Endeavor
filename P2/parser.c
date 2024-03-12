@@ -15,6 +15,7 @@ char* getword(){
         mystring[i++] = c[0];
         if(i >= (initsize / 2)){
             char* newstring = realloc(mystring,initsize * 2);
+            initsize *= 2;
             if(newstring == NULL){
                 fprintf(stderr,"realloc failed\n");
                 free(mystring);
