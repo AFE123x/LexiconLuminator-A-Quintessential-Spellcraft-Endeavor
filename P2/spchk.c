@@ -103,10 +103,13 @@ void spellCheck(char *dict, char *file) {
             // Ignore special entries "." and ".."
             if (entry->d_name[0] != '.') {
                 //spell check only the text files or no extension files
-                if (strrchr(entry->d_name, '.') == NULL || strcmp(strrchr(entry->d_name, '.'), ".txt") == 0) {
-                    //printf("%s\n", entry->d_name);
+                if ((strrchr(entry->d_name, '.') == NULL || strcmp(strrchr(entry->d_name, '.'), ".txt" ) == 0) && entry->d_name != NULL) {
+                    printf("%s\n", entry->d_name);
                     
                     //NOW we will loop through this directory and compare each "entry->d_name" to the dictionary
+
+                    
+
 
                 }
             }
@@ -153,7 +156,7 @@ int main(int argc, char *argv[]) {
 
 
         //now we compare each file or directory to the dictionary
-        for (int i = 0; i < argc-1; i++) {
+        for (int i = 0; i < argc-2; i++) {
             //compare the dictionary to the file or directory
             spellCheck(argv[1], argv[i+2]);
         }
