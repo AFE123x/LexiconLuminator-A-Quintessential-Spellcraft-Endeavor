@@ -1,5 +1,8 @@
 /*
-used to parse a given dictionary file for each of its words
+Contains the functions used to parse a file or parse a dictionary
+
+|parsedict| - parses a dictionary file and adds each word to the trie
+|parsefile| - parses a file and checks each word against the trie
 */
 
 
@@ -18,23 +21,28 @@ static char* getword(){
     int reada = read(fd,c,1);
     int i = 0;
 
-    while(c[0] != '\n' && reada > 0){ 
+    while(c[0] != '\n' && c[0] != ' ' && reada > 0){ 
         mystring[i++] = c[0];
+
+        //realloc the string if it is half full
         if(i >= (initsize / 2)){
             char* newstring = realloc(mystring,initsize * 2);
             initsize *= 2;
+            //free mystring if realloc fails
             if(newstring == NULL){
                 fprintf(stderr,"realloc failed\n");
                 free(mystring);
                 exit(EXIT_FAILURE);
             }
+
+            //give mystring the newstring's allocation
             mystring = newstring;
 
         }
         reada = read(fd,c,1);
     }
     if(i == 0){
-        printf("no string read\n");
+        printf("---File Read Complete---\n");
         free(mystring);
         return NULL;
     }
@@ -48,6 +56,8 @@ static char* getword(){
     mystring = newstring;
     return mystring;
 }
+
+//parses a dictionary file and adds each word to the trie
 void parsedict(char* filepath){
     fd = open(filepath,O_RDONLY);
      if(fd == -1){
@@ -56,10 +66,10 @@ void parsedict(char* filepath){
     }
 
     char* mystring = getword();
-    int i = 0;
+    //int i = 0;
 
     while(mystring != NULL){
-        printf("iteration %d: %s\n",i++,mystring);
+        //printf("iteration %d: %s\n",i++,mystring);
         put(mystring);
 
         free(mystring);
@@ -68,8 +78,9 @@ void parsedict(char* filepath){
 
 }
 
+// parses a file and checks each word against the trie
 void parsefile(char* filepath) {
-    //we want to seperate each word in the file
+    //we want to separate each word in the file
     //we will use the space as the delimiter
     //pass each word into the trie for comparison
 
@@ -77,15 +88,25 @@ void parsefile(char* filepath) {
     fd = open(filepath,O_RDONLY);
 
     //print error message and exit if the file is not found
-    //this shouldnt even happen in the first place
+    //this shouldn't even happen in the first place
     if(fd == -1){
         perror("unable to open file\n");
         exit(EXIT_FAILURE);
     }
+
+    char* mystring = getword();
+    //while we are not at the end of the file (0 is provided when the file ends)
+    while(mystring != NULL){
+            if(!exists(mystring)){
+                printf("WRONG: %s\n",mystring);
+            }
+        
+        mystring = getword();
+    }
     
-    //read each word in the file
-    //using a 2D array to store each word
-    char word[1000][100];
+    
+
+
 
 }
 

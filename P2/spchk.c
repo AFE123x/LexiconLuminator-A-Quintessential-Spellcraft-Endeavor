@@ -43,7 +43,7 @@ void PRINTERR(enum ERROR_CODES error, char *value, char *argv[]) {
 //call functions ahead of time
 void DTE(char *arg);
 void isEmpty(char *arg);
-void spellCheck(char *dict, char *file);
+void spellCheck(char *file);
 
 
 
@@ -87,7 +87,7 @@ void isEmpty(char *arg) {
         }
 }
 
-void spellCheck(char *dict, char *file) {
+void spellCheck(char *file) {
     struct stat buffer;
     stat(file, &buffer);
 
@@ -108,7 +108,7 @@ void spellCheck(char *dict, char *file) {
             if (entry->d_name[0] != '.') {
                 //spell check only the text files or no extension files
                 if ((strrchr(entry->d_name, '.') == NULL || strcmp(strrchr(entry->d_name, '.'), ".txt" ) == 0) && entry->d_name != NULL) {
-                    printf("%s\n", entry->d_name);
+                    //printf("%s\n", entry->d_name);
                     
                     //NOW we will loop through this directory and compare each "entry->d_name" to the dictionary
                     size_t file_name = strlen(entry->d_name);
@@ -116,8 +116,10 @@ void spellCheck(char *dict, char *file) {
                     char* fullname = malloc(sizeof(char) * (file_name + directory_path + 10));
                     strcpy(fullname,file);
                     strcat(fullname,entry->d_name);
-                    printf("fullname: %s\n",fullname);
-                    parsedict(fullname);
+                    //printf("fullname: %s\n",fullname);
+                    //is this function now defunct????
+                    //I think so
+                    parsefile(fullname);
                     
                     free(fullname);
                 }
@@ -130,17 +132,16 @@ void spellCheck(char *dict, char *file) {
     }
 
     //if the given file is a regular file, run the spell check on the file
+    //I will not error handle for the possibility of the file being not a file
     if (S_ISREG(buffer.st_mode)) {
-        //run the spell check comparison on the given file "file"
-        //I am going to HOPE that the given file is a txt or a file with no extension
-        //since the file is given directly by the user.
+        parsefile(file);
     }
 
 }
 //do we have to check and make sure if they are anything other than directory or file? probably
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char** argv) {
 
     //if argc is less than 2, print error message and return 1
     if (argc <= 2) {
@@ -164,11 +165,15 @@ int main(int argc, char *argv[]) {
         //print how many files there are
         printf("There were %d files passed into the program. (counting the dictionary)\n", argc-1);
 
+        //parse the dictionary
+        parsedict(argv[1]);
+        //the dictionary is now parsed and the trie is built
+
 
         //now we compare each file or directory to the dictionary
         for (int i = 0; i < argc-2; i++) {
             //compare the dictionary to the file or directory
-            spellCheck(argv[1], argv[i+2]);
+            spellCheck(argv[i+2]);
         }
         destroy();
     }

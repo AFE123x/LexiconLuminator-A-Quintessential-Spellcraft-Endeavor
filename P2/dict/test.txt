@@ -1,4 +1,0 @@
-This is a text file 
-with words on 
-different lines 
-can the program handle this?
