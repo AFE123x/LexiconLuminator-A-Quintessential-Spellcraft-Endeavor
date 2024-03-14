@@ -1,6 +1,4 @@
-I'm
-not
-tryna
-get
-arrested
-today
+This is a text file 
+with words on 
+different lines 
+can the program handle this?

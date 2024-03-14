@@ -1,6 +1,6 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-void parsefile(char* filepath);
+void parsedict(char* filepath);
 
 #endif

@@ -117,7 +117,7 @@ void spellCheck(char *dict, char *file) {
                     strcpy(fullname,file);
                     strcat(fullname,entry->d_name);
                     printf("fullname: %s\n",fullname);
-                    parsefile(fullname);
+                    parsedict(fullname);
                     
                     free(fullname);
                 }

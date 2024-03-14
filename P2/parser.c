@@ -48,7 +48,7 @@ static char* getword(){
     mystring = newstring;
     return mystring;
 }
-void parsefile(char* filepath){
+void parsedict(char* filepath){
     fd = open(filepath,O_RDONLY);
      if(fd == -1){
         perror("unable to open file\n");
@@ -65,6 +65,27 @@ void parsefile(char* filepath){
         free(mystring);
         mystring = getword();
     }
+
+}
+
+void parsefile(char* filepath) {
+    //we want to seperate each word in the file
+    //we will use the space as the delimiter
+    //pass each word into the trie for comparison
+
+    //open the file
+    fd = open(filepath,O_RDONLY);
+
+    //print error message and exit if the file is not found
+    //this shouldnt even happen in the first place
+    if(fd == -1){
+        perror("unable to open file\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    //read each word in the file
+    //using a 2D array to store each word
+    char word[1000][100];
 
 }
 
