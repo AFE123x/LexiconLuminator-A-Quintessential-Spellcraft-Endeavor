@@ -19,11 +19,17 @@ void printstring(char* buffer, int size){
     }
     printf("\n");
 }
+
 static char* getword() {
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
     char c[1]; 
     int reada = read(fd, c, 1);
+
+    while ((c[0] == ' ' || c[0] == '\n') && reada != 0) {
+    reada = read(fd, c, 1);
+    }
+
     int i = 0;
     
     unsigned int row = 1;
@@ -31,6 +37,7 @@ static char* getword() {
 
     while (c[0] != '\n' && c[0] != ' ' && reada > 0) { 
         mystring[i++] = c[0];
+
         col++;
 
         //realloc the string if it is half full
@@ -48,7 +55,7 @@ static char* getword() {
             mystring = newstring;
         }
 
-        printstring(mystring,i);
+        // printstring(mystring,i);
         // Read the next character
         reada = read(fd, c, 1);
         
@@ -58,7 +65,7 @@ static char* getword() {
             break;
         }
     }
-    
+
     if (i == 0) {
         printf("---File Read Complete---\n");
         free(mystring);
@@ -124,10 +131,8 @@ void parsefile(char* filepath) {
             free(mystring);
         mystring = getword();
     }
-    
-    
-
-
 
 }
+
+
 

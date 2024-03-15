@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS =  -fsanitize=address,undefined,leak -std=c99 -Og -Wall -g
 spchk: spchk.o tries.o parser.o
-	$(CC) -o $@ spchk.o tries.o parser.o $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
 #for parser testing
 spchk.o: spchk.c
 	$(CC) -c $^ $(CFLAGS)
@@ -14,5 +14,5 @@ triestest.o: triestest.c
 	$(CC) -c $< $(CFLAGS)
 tries.o: tries.c
 	$(CC) -c $< $(CFLAGS)
-clean: triestest parser spchk
+clean: triestest spchk
 	rm *.o $^

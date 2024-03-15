@@ -3,10 +3,8 @@
 #include "tries.h"
 int main(int argc, char const *argv[])
 {
-    put("I am a string");
-    if(exists("I am a string")){
-        printf("it exists :-D\n");
-    }
-    destroy();
+    char capybara = 'C';
+    capybara += 32;
+    printf("%c\n",capybara);
     return 0;
 }

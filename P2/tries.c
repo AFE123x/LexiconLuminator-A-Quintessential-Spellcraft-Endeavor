@@ -5,6 +5,7 @@
 #include "tries.h"
 #include<stdio.h>
 #include<stdlib.h>
+#include<ctype.h>
 
 /**
  * enable debugging mode, which will enable print statements
@@ -25,6 +26,7 @@
 struct Node{
     char c;
     char isEnd;
+    char isUppercase;
     struct Node* left;
     struct Node* center;
     struct Node* right;
@@ -46,7 +48,16 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
     char c = word[index];
    if(curr == NULL){
     curr = (struct Node*)malloc(sizeof(struct Node));
-    curr->c = c;
+    if(isupper(c)){
+        curr->isUppercase = 1;
+        c += 32;
+        curr->c = c;
+    }
+    else{
+        curr->isUppercase = 0;
+        curr->c = c;
+    }
+    
     curr->center = curr->left = curr->right = NULL;
     if(word[index + 1] == '\0'){
         curr->isEnd = 1;
@@ -57,6 +68,8 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
     }
    }
    if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
+    
+    
    if(c < curr->c){
     curr->left = puthelp(curr->left,word,index);
    }
@@ -85,6 +98,8 @@ void destroy_helper(struct Node* curr){
     free(curr);
 }
 
+
+
 /**
  * a helper function to determine if string exists.
  * @param curr: a node reference
@@ -92,11 +107,13 @@ void destroy_helper(struct Node* curr){
  * @param index: indicates which character to look at.
 */
 struct Node* get_helper(struct Node* curr, char* word, int index) {
+    //65-90 uppercase 97-122 lowercase
     if (curr == NULL) {
         return NULL;
     }
-
+    
     char c = word[index];
+
     if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
     if (c < curr->c) {
         return get_helper(curr->left, word, index);
