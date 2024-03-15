@@ -13,54 +13,70 @@ Contains the functions used to parse a file or parse a dictionary
 #include<stdlib.h>
 #include "./tries.h"
 static int fd;
-
-static char* getword(){
+void printstring(char* buffer, int size){
+    for(int i = 0; i < size ; i++){
+        printf("%c",buffer[i]);
+    }
+    printf("\n");
+}
+static char* getword() {
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
     char c[1]; 
-    int reada = read(fd,c,1);
+    int reada = read(fd, c, 1);
     int i = 0;
     
     unsigned int row = 1;
     unsigned int col = 0;
 
-    while(c[0] != '\n' && c[0] != ' ' && reada > 0){ 
+    while (c[0] != '\n' && c[0] != ' ' && reada > 0) { 
         mystring[i++] = c[0];
         col++;
 
         //realloc the string if it is half full
-        if(i >= (initsize / 2)){
-            char* newstring = realloc(mystring,initsize * 2);
+        if (i >= (initsize / 2)) {
+            char* newstring = realloc(mystring, initsize * 2);
             initsize *= 2;
             //free mystring if realloc fails
-            if(newstring == NULL){
-                fprintf(stderr,"realloc failed\n");
+            if (newstring == NULL) {
+                fprintf(stderr, "realloc failed\n");
                 free(mystring);
                 exit(EXIT_FAILURE);
             }
 
             //give mystring the newstring's allocation
             mystring = newstring;
-
         }
-        reada = read(fd,c,1);
+
+        printstring(mystring,i);
+        // Read the next character
+        reada = read(fd, c, 1);
+        
+        // Check if the next character is a newline or space
+        if (c[0] == '\n' || c[0] == ' ') {
+            // If it is, stop reading and break out of the loop
+            break;
+        }
     }
-    if(i == 0){
+    
+    if (i == 0) {
         printf("---File Read Complete---\n");
         free(mystring);
         return NULL;
     }
+    
     mystring[i++] = '\0';
-    char* newstring = realloc(mystring,i);
-    if(newstring == NULL){
-        fprintf(stderr,"unable to realloc string\n");
+    char* newstring = realloc(mystring, i);
+    if (newstring == NULL) {
+        fprintf(stderr, "unable to realloc string\n");
         free(mystring);
         exit(EXIT_FAILURE);
     }
     mystring = newstring;
-    //printf("row: %d col: %d\n",row,col);
+    //printf("row: %d col: %d\n", row, col);
     return mystring;
 }
+
 
 //parses a dictionary file and adds each word to the trie
 void parsedict(char* filepath){
@@ -105,7 +121,7 @@ void parsefile(char* filepath) {
             if(!exists(mystring)){
                 printf("WRONG: %s\n",mystring);
             }
-        
+            free(mystring);
         mystring = getword();
     }
     
