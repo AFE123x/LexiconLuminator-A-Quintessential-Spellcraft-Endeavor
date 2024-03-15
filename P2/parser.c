@@ -20,9 +20,13 @@ static char* getword(){
     char c[1]; 
     int reada = read(fd,c,1);
     int i = 0;
+    
+    unsigned int row = 1;
+    unsigned int col = 0;
 
     while(c[0] != '\n' && c[0] != ' ' && reada > 0){ 
         mystring[i++] = c[0];
+        col++;
 
         //realloc the string if it is half full
         if(i >= (initsize / 2)){
@@ -54,6 +58,7 @@ static char* getword(){
         exit(EXIT_FAILURE);
     }
     mystring = newstring;
+    //printf("row: %d col: %d\n",row,col);
     return mystring;
 }
 
