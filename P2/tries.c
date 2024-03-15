@@ -106,23 +106,39 @@ void destroy_helper(struct Node* curr){
  * @param word: a word we're looking for
  * @param index: indicates which character to look at.
 */
+#include <ctype.h>
+
 struct Node* get_helper(struct Node* curr, char* word, int index) {
-    //65-90 uppercase 97-122 lowercase
+    // Check if current node is NULL
     if (curr == NULL) {
         return NULL;
     }
     
     char c = word[index];
 
-    if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
+    // Convert c to lowercase for comparison
+    if(islower(c) == islower(curr->c)){
+    if (isupper(c) && !curr->isUppercase) {
+        c = tolower(c);
+    }
+    else if(!isupper(c) && curr->isUppercase){
+        c = toupper(c);
+    }
+    else if(isupper(c) && curr->isUppercase){
+        c = tolower(c);
+    }
+    }
+    else{
+        islower(c);
+    }
+
+    printf("char c = %c\t curr->c = %c\n", c, curr->c);
+
     if (c < curr->c) {
         return get_helper(curr->left, word, index);
     } else if (c > curr->c) {
         return get_helper(curr->right, word, index);
     } else {
-        if(!isupper(c) && curr->isUppercase){
-            return NULL;
-        }
         if (word[index + 1] == '\0') {
             // Reached the end of the word
             if (curr->isEnd) {
@@ -136,6 +152,7 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
         }
     }
 }
+
 
 //========================client functions================================
 

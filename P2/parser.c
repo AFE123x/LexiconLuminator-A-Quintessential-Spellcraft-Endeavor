@@ -13,6 +13,10 @@ Contains the functions used to parse a file or parse a dictionary
 #include<stdlib.h>
 #include "./tries.h"
 static int fd;
+unsigned int* row = 1;
+unsigned int* col = 0;
+
+
 void printstring(char* buffer, int size){
     for(int i = 0; i < size ; i++){
         printf("%c",buffer[i]);
@@ -26,14 +30,14 @@ static char* getword() {
     char c[1]; 
     int reada = read(fd, c, 1);
 
+    int random = 0;
     while ((c[0] == ' ' || c[0] == '\n') && reada != 0) {
     reada = read(fd, c, 1);
     }
 
     int i = 0;
     
-    unsigned int row = 1;
-    unsigned int col = 0;
+
 
     while (c[0] != '\n' && c[0] != ' ' && reada > 0) { 
         mystring[i++] = c[0];
