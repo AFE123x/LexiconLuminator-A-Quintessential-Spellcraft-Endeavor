@@ -120,6 +120,9 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
     } else if (c > curr->c) {
         return get_helper(curr->right, word, index);
     } else {
+        if(!isupper(c) && curr->isUppercase){
+            return NULL;
+        }
         if (word[index + 1] == '\0') {
             // Reached the end of the word
             if (curr->isEnd) {

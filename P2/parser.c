@@ -126,7 +126,7 @@ void parsefile(char* filepath) {
     //while we are not at the end of the file (0 is provided when the file ends)
     while(mystring != NULL){
             if(!exists(mystring)){
-                printf("WRONG: %s\n",mystring);
+                printf("%s (row?,col?): %s\n",filepath, mystring);
             }
             free(mystring);
         mystring = getword();
