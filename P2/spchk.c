@@ -20,9 +20,9 @@ enum ERROR_CODES {
     ARG_EMPTY,
     DNE,
 };
-static char* tolowercase(char* buffer){
+
     
-}
+
 void PRINTERR(enum ERROR_CODES error, char *value, char *argv[]) {
     switch (error) {
         case NOT_DIRECTORY:
@@ -102,8 +102,10 @@ void spellCheck(char *file) {
             exit(EXIT_FAILURE);
         }
         // Read each entry in the directory
-        struct dirent *entry;
-        while ((entry = readdir(dir)) != NULL) {
+        struct dirent *entry = readdir(dir);
+        
+        while (entry != NULL) {
+            printf("%s\n",entry->d_name);
             // Ignore special entries "." and ".."
             if (entry->d_name[0] != '.') {
                 //spell check only the text files or no extension files
@@ -116,7 +118,7 @@ void spellCheck(char *file) {
                     char* fullname = malloc(sizeof(char) * (file_name + directory_path + 10));
                     strcpy(fullname,file);
                     strcat(fullname,entry->d_name);
-                    //printf("fullname: %s\n",fullname);
+                    printf("fullname: %s\n",fullname);
                     //is this function now defunct????
                     //I think so
                     parsefile(fullname);
@@ -124,6 +126,7 @@ void spellCheck(char *file) {
                     free(fullname);
                 }
             }
+            entry = readdir(dir);
         }
         // Close the directory
         closedir(dir);
@@ -168,10 +171,11 @@ int main(int argc, char** argv) {
         //parse the dictionary
         parsedict(argv[1]);
         //the dictionary is now parsed and the trie is built
-
+        //print();
 
         //now we compare each file or directory to the dictionary
         for (int i = 0; i < argc-2; i++) {
+            printf("in main for loop: %s\n",argv[i+2]);
             //compare the dictionary to the file or directory
             spellCheck(argv[i+2]);
         }

@@ -5,7 +5,7 @@
 #include "tries.h"
 #include<stdio.h>
 #include<stdlib.h>
-#include<ctype.h>
+//#include<ctype.h>
 
 /**
  * enable debugging mode, which will enable print statements
@@ -35,7 +35,23 @@ struct Node{
 struct Node* head; //our head instance
 
 //========================helper functions================================
-
+static char newisupper(char a){
+    return (a >= 65 && a <= 90);
+}
+static char newislower(char a){
+    return (a >= 97 && a <= 122);
+}
+static char newtolower(char a){
+    if(newisupper(a)){
+        return a + 32;
+    }
+    return a;
+}
+static char newtoupper(char a){
+    if(newislower(a)){
+        return a - 32;
+    }
+}
 
 /**
  * A helper function to actually put our new word in the trie.
@@ -48,7 +64,7 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
     char c = word[index];
    if(curr == NULL){
     curr = (struct Node*)malloc(sizeof(struct Node));
-    if(isupper(c)){
+    if(newisupper(c)){
         curr->isUppercase = 1;
         c += 32;
         curr->c = c;
@@ -57,7 +73,7 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
         curr->isUppercase = 0;
         curr->c = c;
     }
-    
+
     curr->center = curr->left = curr->right = NULL;
     if(word[index + 1] == '\0'){
         curr->isEnd = 1;
@@ -68,8 +84,12 @@ struct Node* puthelp(struct Node* curr, char* word, int index) {
     }
    }
    if(DEBUGMODE) printf("char c = %c\t curr->c = %c\n",c,curr->c);
-    
-    
+   else{
+       if(newisupper(c)){
+           c += 32;
+       }
+   } 
+        
    if(c < curr->c){
     curr->left = puthelp(curr->left,word,index);
    }
@@ -106,7 +126,7 @@ void destroy_helper(struct Node* curr){
  * @param word: a word we're looking for
  * @param index: indicates which character to look at.
 */
-#include <ctype.h>
+
 
 struct Node* get_helper(struct Node* curr, char* word, int index) {
     // Check if current node is NULL
@@ -117,22 +137,25 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
     char c = word[index];
 
     // Convert c to lowercase for comparison
-    if(islower(c) == islower(curr->c)){
-    if (isupper(c) && !curr->isUppercase) {
-        c = tolower(c);
+    if((c >= 65 && c <= 90) || (c >= 97 && c <= 122)){
+    if(newtolower(c) == curr->c){
+    if (newisupper(c) && !curr->isUppercase) {
+        c += 32;
     }
-    else if(!isupper(c) && curr->isUppercase){
-        c = toupper(c);
+    else if(newislower(c) && curr->isUppercase){
+        c -= 32;
     }
-    else if(isupper(c) && curr->isUppercase){
-        c = tolower(c);
+    else if(newisupper(c) && curr->isUppercase){
+        c += 32;
     }
     }
     else{
-        islower(c);
+        if(newisupper(c)){
+            c += 32;
+        }
     }
-
-    printf("char c = %c\t curr->c = %c\n", c, curr->c);
+    }
+    //printf("char c = %c\t curr->c = %c\n", c, curr->c);
 
     if (c < curr->c) {
         return get_helper(curr->left, word, index);
@@ -140,8 +163,10 @@ struct Node* get_helper(struct Node* curr, char* word, int index) {
         return get_helper(curr->right, word, index);
     } else {
         if (word[index + 1] == '\0') {
+            printf("%s\n",word);
             // Reached the end of the word
             if (curr->isEnd) {
+                
                 return curr; // Found the word
             } else {
                 return NULL; // Word not found
