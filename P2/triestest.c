@@ -1,6 +1,7 @@
 #include "tries.h"
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #define WORDLENGTH 17
 /**
  * This is a testclient to test the functionality of the tries
@@ -22,27 +23,9 @@ char* randomword(){
     return word;
 }
 int main(int argc, char** argv){
-    if(argc < 2){
-        fprintf(stderr,"./triesttest {number of variables}\n");
-        return EXIT_FAILURE;
-    }
-    int arraysize = atoi(argv[1]);
-    randomwords = malloc(sizeof(char*) * arraysize);
-    for(int i = 0; i < arraysize; i++){
-        randomwords[i] = randomword();
-        put(randomwords[i]);
-    }
-    // print();
-    for(int i = 0; i < arraysize; i++){
-        if(!exists(randomwords[i])){
-            printf("incorrect: expected: %s\n",randomwords[i]);
-        }
-    }
-    for(int i = 0; i < arraysize; i++){
-        free(randomwords[i]);
-    }
-    free(randomwords);
-
-
+    char* myptr = "hatsune miku";
+    put(myptr);
+    char* ptr2 = "HatsuNe miku";
+    printf("%s\n",get(ptr2));
     destroy();
 }
