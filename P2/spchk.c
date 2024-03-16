@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
 
         //now we compare each file or directory to the dictionary
         for (int i = 0; i < argc-2; i++) {
-            printf("in main for loop: %s\n",argv[i+2]);
+            //printf("in main for loop: %s\n",argv[i+2]);
             //compare the dictionary to the file or directory
             spellCheck(argv[i+2]);
         }

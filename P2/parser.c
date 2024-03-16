@@ -53,7 +53,7 @@ static char* getword() {
         inside++;
         colcount++;
         
-        printf("inside: %d\n", inside);
+        //printf("inside: %d\n", inside);
         
         //realloc the string if it is half full
         if (i >= (initsize / 2)) {
@@ -77,16 +77,16 @@ static char* getword() {
         
         if (c[0] == ' ') {
             *colwp = colcount+1;
-            printf("col value after space: %d\n", *colwp);
+            //printf("col value after space: %d\n", *colwp);
         }
 
         if (c[0] == '\n') {
-                printf("new line inside\n");
+                //printf("new line inside\n");
                 row++;
                 colcount = 0;
                 //*colwp = 0;
                 //print the column has been reset
-                printf("col reset\n");
+                //printf("col reset\n");
         }
         
 
@@ -215,11 +215,11 @@ void parsefile(char* filepath) {
     char* mystring = getword();
     //while we are not at the end of the file (0 is provided when the file ends)
     while(mystring != NULL){
-            printf("correct string: %s\n",get(mystring));
+            //printf("correct string: %s\n",get(mystring));
             if(!exists(mystring)){
                 
                 printf("%s (row: %d,col: %d): %s\n",filepath, row, *colwp, mystring);
-                printf("row: %d col: %d\n", row, colcount);
+                //printf("row: %d col: %d\n", row, colcount);
             }
             free(mystring);   
         mystring = getword();
