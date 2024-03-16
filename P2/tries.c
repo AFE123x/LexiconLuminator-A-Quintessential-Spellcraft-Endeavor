@@ -19,7 +19,7 @@ unsigned int height(struct Node* curr){
     }
     return curr->height;
 }
-unsigned int getbalance(struct Node* curr){
+int getbalance(struct Node* curr){
     if(curr == NULL){
         return 0;
     }
@@ -31,7 +31,7 @@ static struct Node* nodeconstructor(char* word){
     strcpy(toreturn->data, word); // Copy the string data
     toreturn->height = 1;
     toreturn->left = toreturn->right = NULL;
-    printf("Node created: %s\n",toreturn->data);
+    // printf("Node created: %s\n",toreturn->data);
     return toreturn; // Don't forget to return the constructed node
 }
 static void tolowercase(char* a){
@@ -83,12 +83,10 @@ static struct Node* put_helper(struct Node* curr, char* word){
     else if(decision > 0){ //A > B
         curr->right = put_helper(curr->right,word);
     }
-    else{
-        free(curr->data);
-        curr->data = word;
-    }
+
     curr->height = max(height(curr->left),height(curr->right)) + 1;
-    unsigned int balance = getbalance(curr);
+    int balance = getbalance(curr);
+    // printf("Balance is %d\n",balance);
     if(balance < -1 && getbalance(curr->right) < 0){ // RR case
         return LRotate(curr);
     }
@@ -113,6 +111,7 @@ static char* get_helper(struct Node* curr, char* word){
     if(curr == NULL){
         return NULL;
     }
+    // printf("gettin word: %s\n",word);
     int decision = slaycmp(word,curr->data);
 
     if(decision < 0){ //A < B
