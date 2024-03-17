@@ -14,19 +14,28 @@ Contains the functions used to parse a file or parse a dictionary
 #include "./tries.h"
 static int fd;
 
-//values to track the rows and columns of the word in the file
+//tracks if the first word of the row has been read
+short firstWord = 0;
+//just a variable to check if the VERY FIRST word in the file has been read
+short veryfirst = 0;
+//this is actively counting the rows with every \n
 unsigned int row = 1;
-unsigned int colcount = 0;
-unsigned int colwrds = 0;
+//this actively counts the col with the chars (should have named charcount)
+unsigned int colcount = 1;
+//this is holds col value for the beginning of a word
+unsigned int colwrds = 1;
+//this is the row value stored for as soon as the row switches
+unsigned int activerow = 1;
 
-//pointers to the row and column values
-// unsigned int *rowp = &row;
-// unsigned int *colp = &colcount;
+//*colwp actively updates the col value for the beginning of a word
+//why not just print the active col number? because it would be wrong
+//our print statement prints AFTER a word is read. meaning it would get the col value after the word is read as well
+//so we have a pointer pointing to the value of the beginning of words
 unsigned int *colwp = &colwrds;
+unsigned int *rowp = &activerow;
 
-int inside = 0;
-int outside = 0;
 
+//prints the string
 void printstring(char* buffer, int size){
     for(int i = 0; i < size ; i++){
         printf("%c",buffer[i]);
@@ -34,6 +43,8 @@ void printstring(char* buffer, int size){
     printf("\n");
 }
 
+
+//gets the word SPECIFICALLY for the parsefile function
 static char* getword() {
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
@@ -41,19 +52,41 @@ static char* getword() {
     int reada = read(fd, c, 1);
 
     while ((c[0] == ' ' || c[0] == '\n') && reada != 0) {
-    reada = read(fd, c, 1);
+        reada = read(fd, c, 1);
+        colcount++;
+        if (c[0] == ' ' || c[0] == '\n') {
+            if (c[0] == '\n') {
+                row++;
+                colcount = -1; //this could bite me in the butt later...
+            }
+            *colwp = colcount+2;
+            firstWord = 0;
+        }
+
+    }
+
+    if (firstWord == 1) {
+        //printf value of colcount
+        *rowp = row;
+        printf("col value: %d\n", colcount);
+        *colwp = colcount+1;
     }
 
     int i = 0;
     // outside++;
     // printf("outside = wordcount: %d\n", outside);
 
+
     while (c[0] != '\n' && c[0] != ' ' && reada > 0) { 
         mystring[i++] = c[0];
-        inside++;
         colcount++;
-        
-        //printf("inside: %d\n", inside);
+        if (veryfirst == 0) {
+            *colwp = colcount-1;
+            veryfirst = 1;
+            *rowp = row;
+        }
+        printf("inside: %d\n", colcount);
+        //printf("inside\n");
         
         //realloc the string if it is half full
         if (i >= (initsize / 2)) {
@@ -74,36 +107,41 @@ static char* getword() {
         // printstring(mystring,i);
         // Read the next character
         reada = read(fd, c, 1);
-        
-        if (c[0] == ' ') {
-            *colwp = colcount+1;
-            //printf("col value after space: %d\n", *colwp);
+        if (firstWord == 4) {
+            if (c[0] == ' ') {
+                *colwp = colcount+2;
+                //printf("col value after space: %d\n", *colwp);
+            } else if (c[0] == '\n') {
+                    //printf("new line inside\n");
+                    colcount = 0;
+                    firstWord = 0;
+                    //*colwp = 0;
+                    //print the column has been reset
+                    //printf("col reset\n");
+            }
         }
-
-        if (c[0] == '\n') {
-                //printf("new line inside\n");
-                row++;
-                colcount = 0;
-                //*colwp = 0;
-                //print the column has been reset
-                //printf("col reset\n");
-        }
-        
-
-
         // Check if the next character is a newline or space
         if (c[0] == '\n' || c[0] == ' ') {
+            firstWord = 1;
+            if (c[0] == '\n') {
+                colcount = 0;
+                row++;
+            }
+
             // If it is, stop reading and break out of the loop
             break;
         }
     }
 
+    //prints when we reach the end of a file
     if (i == 0) {
         printf("---File Read Complete---\n");
         free(mystring);
         return NULL;
     }
     
+
+    //for the case that we run out of memory somehow
     mystring[i++] = '\0';
     char* newstring = realloc(mystring, i);
     if (newstring == NULL) {
@@ -119,6 +157,7 @@ static char* getword() {
 //function that gets the word size for parsedict specifically
 //originally the parsedict and parsefile were using the same getword function
 //it was changed for column and row counting to work
+//DO NOT TOUCH
 static char* getwordfordict() {
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
@@ -217,8 +256,8 @@ void parsefile(char* filepath) {
     while(mystring != NULL){
             //printf("correct string: %s\n",get(mystring));
             if(!exists(mystring)){
-                
-                printf("%s (row: %d,col: %d): %s\n",filepath, row, *colwp, mystring);
+
+                printf("%s (row: %d,col: %d): %s\n",filepath, *rowp, *colwp, mystring);
                 //printf("row: %d col: %d\n", row, colcount);
             }
             free(mystring);   
