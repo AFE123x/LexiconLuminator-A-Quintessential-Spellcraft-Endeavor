@@ -27,6 +27,9 @@ unsigned int colwrds = 1;
 //this is the row value stored for as soon as the row switches
 unsigned int activerow = 1;
 
+//have we hit the first char of the word?
+short firstchar = 0;
+
 //*colwp actively updates the col value for the beginning of a word
 //why not just print the active col number? because it would be wrong
 //our print statement prints AFTER a word is read. meaning it would get the col value after the word is read as well
@@ -58,11 +61,13 @@ static char* getword() {
         //printf("character %c col %d\n",c[0],*colwp);
         
         colcount++;
+        //print the colcount
+        printf("first word col: %d\n", colcount);
         
         if (c[0] == ' ' || c[0] == '\n') {
             if (c[0] == '\n') {
                 row++;
-                colcount = 1; //this could bite me in the butt later...
+                colcount = 0; //this could bite me in the butt later...
             }
             *colwp = colcount;
             firstWord = 0;
@@ -70,28 +75,37 @@ static char* getword() {
 
     }
 
-    if (firstWord == 1) {
-        //printf value of colcount
-        *rowp = row;
-        *colwp = colcount+1;
-    }
+    // if (firstWord == 1) {
+    //     //printf value of colcount
+    //     *rowp = row;
+    //     *colwp = colcount+1;
+    // }
 
     int i = 0;
+
+        if (firstchar == 0) {
+            printf("row: %d col: %d\n", row, colcount);
+            *colwp = colcount;
+            *rowp = row;
+            firstchar = 1;
+        }
 
 
     while (c[0] != '\n' && c[0] != ' ' && reada > 0) { 
         mystring[i++] = c[0];
         colcount++;
 
-        if (veryfirst == 0) {
-            *colwp = colcount-1;
-            veryfirst = 1;
-        }
+        // if (veryfirst == 0) {
+        //     *colwp = colcount-1;
+        //     veryfirst = 1;
+        // }
+        printf("inside col: %d\n", colcount);
+
         
         //stores the value of the row for when characters are being read
         //we do not need to store the value of the row when the row is being reset.
         //only increment it
-        *rowp = row;
+        //*rowp = row;
 
         //realloc the string if it is half full
         if (i >= (initsize / 2)) {
@@ -109,7 +123,6 @@ static char* getword() {
         }
 
 
-
         // Read the next character
         reada = read(fd, c, 1);
 
@@ -118,6 +131,12 @@ static char* getword() {
         // Check if the next character is a newline or space
         if (c[0] == '\n' || c[0] == ' ') {
             firstWord = 1;
+            
+            firstchar = 0;
+            if (c[0] == ' ') {
+                colcount++;
+            }
+
 
             //if the next character is a newline, increment the row and reset the column
             if (c[0] == '\n') {
