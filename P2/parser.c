@@ -53,13 +53,14 @@ static char* getword() {
 
     while ((c[0] == ' ' || c[0] == '\n') && reada != 0) {
         reada = read(fd, c, 1);
+        printf("character %c col %d\n",c[0],*colwp);
         colcount++;
         if (c[0] == ' ' || c[0] == '\n') {
             if (c[0] == '\n') {
                 row++;
-                colcount = -1; //this could bite me in the butt later...
+                colcount = 0; //this could bite me in the butt later...
             }
-            *colwp = colcount+2;
+            *colwp = colcount+1;
             firstWord = 0;
         }
 
@@ -68,7 +69,6 @@ static char* getword() {
     if (firstWord == 1) {
         //printf value of colcount
         *rowp = row;
-        printf("col value: %d\n", colcount);
         *colwp = colcount+1;
     }
 
@@ -85,10 +85,11 @@ static char* getword() {
             veryfirst = 1;
             *rowp = row;
         }
-        printf("inside: %d\n", colcount);
-        //printf("inside\n");
         
-        //realloc the string if it is half full
+
+        *rowp = row;
+
+                //realloc the string if it is half full
         if (i >= (initsize / 2)) {
             char* newstring = realloc(mystring, initsize * 2);
             initsize *= 2;

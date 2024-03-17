@@ -1,0 +1,89 @@
+There were 2 files passed into the program. (counting the dictionary)
+---Dict Read Complete---
+character   col 1
+character   col 3
+character   col 4
+character   col 5
+character   col 6
+character   col 7
+character   col 8
+character   col 9
+character   col 10
+character   col 11
+character   col 12
+character   col 13
+character   col 14
+character   col 15
+character   col 16
+character   col 17
+character   col 18
+character   col 19
+character   col 20
+character   col 21
+character   col 22
+character   col 23
+character   col 24
+character   col 25
+character   col 26
+character   col 27
+character   col 28
+character   col 29
+character   col 30
+character   col 31
+character   col 32
+character   col 33
+character   col 34
+character   col 35
+character   col 36
+character   col 37
+character   col 38
+character   col 39
+character   col 40
+character   col 41
+character   col 42
+character   col 43
+character i col 44
+filedir/easiertest.txt (row: 1,col: 44): intercomz
+filedir/easiertest.txt (row: 1,col: 54): adwda
+filedir/easiertest.txt (row: 1,col: 59): awdad
+character   col 59
+character   col 65
+character   col 66
+character 
+ col 67
+character   col 1
+character   col 2
+character   col 3
+character   col 4
+character   col 5
+character C col 6
+filedir/easiertest.txt (row: 2,col: 6): Crydasdw
+filedir/easiertest.txt (row: 2,col: 15): die
+character   col 15
+character   col 19
+character   col 20
+character   col 21
+character 
+ col 22
+character n col 1
+filedir/easiertest.txt (row: 3,col: 1): new
+filedir/easiertest.txt (row: 3,col: 5): word
+character   col 5
+character   col 10
+character 
+ col 11
+character   col 1
+character   col 2
+character   col 3
+character   col 4
+character   col 5
+character   col 6
+character   col 7
+character   col 8
+character a col 9
+filedir/easiertest.txt (row: 4,col: 9): another
+filedir/easiertest.txt (row: 4,col: 17): sentence
+filedir/easiertest.txt (row: 4,col: 25): dnwoaindioand
+filedir/easiertest.txt (row: 5,col: 1): adwadsadw
+---File Read Complete---
+Destroying at 0x603000000070
