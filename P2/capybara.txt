@@ -83,7 +83,8 @@ character   col 8
 character a col 9
 filedir/easiertest.txt (row: 4,col: 9): another
 filedir/easiertest.txt (row: 4,col: 17): sentence
-filedir/easiertest.txt (row: 4,col: 25): dnwoaindioand
-filedir/easiertest.txt (row: 5,col: 1): adwadsadw
+filedir/easiertest.txt (row: 4,col: 25): dnwoaindioan
+character a col 25
+filedir/easiertest.txt (row: 4,col: 38): adwadsadw
 ---File Read Complete---
 Destroying at 0x603000000070

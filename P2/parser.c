@@ -51,16 +51,20 @@ static char* getword() {
     char c[1]; 
     int reada = read(fd, c, 1);
 
+    //this while loop is for when the first word of the row
+    //is not at the beginning of the file. either by spaces or by newlines
     while ((c[0] == ' ' || c[0] == '\n') && reada != 0) {
         reada = read(fd, c, 1);
-        printf("character %c col %d\n",c[0],*colwp);
+        //printf("character %c col %d\n",c[0],*colwp);
+        
         colcount++;
+        
         if (c[0] == ' ' || c[0] == '\n') {
             if (c[0] == '\n') {
                 row++;
-                colcount = 0; //this could bite me in the butt later...
+                colcount = 1; //this could bite me in the butt later...
             }
-            *colwp = colcount+1;
+            *colwp = colcount;
             firstWord = 0;
         }
 
@@ -73,23 +77,23 @@ static char* getword() {
     }
 
     int i = 0;
-    // outside++;
-    // printf("outside = wordcount: %d\n", outside);
 
 
     while (c[0] != '\n' && c[0] != ' ' && reada > 0) { 
         mystring[i++] = c[0];
         colcount++;
+
         if (veryfirst == 0) {
             *colwp = colcount-1;
             veryfirst = 1;
-            *rowp = row;
         }
         
-
+        //stores the value of the row for when characters are being read
+        //we do not need to store the value of the row when the row is being reset.
+        //only increment it
         *rowp = row;
 
-                //realloc the string if it is half full
+        //realloc the string if it is half full
         if (i >= (initsize / 2)) {
             char* newstring = realloc(mystring, initsize * 2);
             initsize *= 2;
@@ -105,27 +109,19 @@ static char* getword() {
         }
 
 
-        // printstring(mystring,i);
+
         // Read the next character
         reada = read(fd, c, 1);
-        if (firstWord == 4) {
-            if (c[0] == ' ') {
-                *colwp = colcount+2;
-                //printf("col value after space: %d\n", *colwp);
-            } else if (c[0] == '\n') {
-                    //printf("new line inside\n");
-                    colcount = 0;
-                    firstWord = 0;
-                    //*colwp = 0;
-                    //print the column has been reset
-                    //printf("col reset\n");
-            }
-        }
+
+
+
         // Check if the next character is a newline or space
         if (c[0] == '\n' || c[0] == ' ') {
             firstWord = 1;
+
+            //if the next character is a newline, increment the row and reset the column
             if (c[0] == '\n') {
-                colcount = 0;
+                colcount = 1;
                 row++;
             }
 
