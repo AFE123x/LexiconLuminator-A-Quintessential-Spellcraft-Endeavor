@@ -27,6 +27,9 @@ unsigned int colwrds = 1;
 //this is the row value stored for as soon as the row switches
 unsigned int activerow = 1;
 
+//if a word is incorrect in ANY FILE, return EXIT_FAILURE
+short exitFailure = 0;
+
 //have we hit the first char of the word?
 short firstchar = 0;
 
@@ -158,6 +161,7 @@ static char* getword() {
 
         if (firstchar == 0) {
             // printf("row: %d col: %d\n", row, colcount);
+
             *colwp = colcount;
             *rowp = row;
             firstchar = 1;
@@ -311,6 +315,7 @@ static char* getwordfordict() {
 void parsedict(char* filepath){
     fd = open(filepath,O_RDONLY);
      if(fd == -1){
+
         perror("unable to open file\n");
         exit(EXIT_FAILURE);
     }
@@ -359,10 +364,15 @@ void parsefile(char* filepath) {
 
                 printf("%s (row: %d,col: %d): %s\n",filepath, *rowp, *colwp, mystring);
                 //printf("row: %d col: %d\n", row, colcount);
+                exitFailure = 1;
             }
             free(mystring);   
         mystring = getword();
     }
+    row = 1;
+    colcount = 1;
+    *rowp = row;
+    *colwp = colcount;
 
 }
 

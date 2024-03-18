@@ -70,7 +70,9 @@ void isEmpty(char *arg) {
             if (buffer.st_size == 2) {
                 PRINTERR(ARG_EMPTY, arg, NULL);
                //printf("the dir is empty\n");
-                exit(EXIT_FAILURE);
+                
+                //exit(EXIT_FAILURE); // uncomment if you want the program to exit after finding an empty directory
+                //printf("The directory %s is empty\n", arg);
             }
             //printf("The Directory is not empty\n");
 
@@ -81,7 +83,8 @@ void isEmpty(char *arg) {
             if (buffer.st_size == 0) {
                 PRINTERR(ARG_EMPTY, arg, NULL);
                 //printf("the file is empty\n");
-                exit(EXIT_FAILURE);
+                //exit(EXIT_FAILURE); // uncomment if you want the program to exit after finding an empty file
+                //printf("The file %s is empty\n", arg);
             }
             //printf("The File is not empty\n");
         }
@@ -99,6 +102,7 @@ void spellCheck(char *file) {
         DIR *dir = opendir(file);
         if (dir == NULL) {
             perror("Unable to open directory");
+            //print the current file
             exit(EXIT_FAILURE);
         }
         // Read each entry in the directory
@@ -118,10 +122,27 @@ void spellCheck(char *file) {
                     char* fullname = malloc(sizeof(char) * (file_name + directory_path + 10));
                     strcpy(fullname,file);
                     strcat(fullname,entry->d_name);
-                    printf("fullname: %s\n",fullname);
+                    //printf("fullname: %s\n",fullname);
                     //is this function now defunct????
                     //I think so
-                    parsefile(fullname);
+                    
+                    //checking if passed in argument is a directory
+                    struct stat buffer2;
+                    stat(fullname, &buffer2);
+                    if (S_ISDIR(buffer2.st_mode)) {
+                        //add a forward slash to the end of the directory
+                        strcat(fullname,"/");
+                        //check if the directory is empty (just to print to the terminal)
+                        isEmpty(fullname);
+                        spellCheck(fullname);
+                        
+                    }
+
+                    if (S_ISREG(buffer2.st_mode)) {
+                        //printf("The current file is: %s\n", fullname);
+                        parsefile(fullname);
+                    }
+
                     
                     free(fullname);
                 }
@@ -137,6 +158,7 @@ void spellCheck(char *file) {
     //if the given file is a regular file, run the spell check on the file
     //I will not error handle for the possibility of the file being not a file
     if (S_ISREG(buffer.st_mode)) {
+        //printf("The current file is: %s\n", file);
         parsefile(file);
     }
 
@@ -180,6 +202,8 @@ int main(int argc, char** argv) {
             spellCheck(argv[i+2]);
         }
         destroy();
+
+        
     }
 
 
