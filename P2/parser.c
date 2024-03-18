@@ -38,14 +38,46 @@ unsigned int *colwp = &colwrds;
 unsigned int *rowp = &activerow;
 
 /**
+ * 
+*/
+static char isLower(char input){
+    return input >= 'a' && input <= 'z';
+}
+
+static char isupper(char input){
+    return input >= 'A' && input <= 'Z';
+}
+/**
  * A better isalpha implementation because the ctype one sucks. 
  * @arg input: a character we want to check, if it's an alpha character
  * @return 1 if character is alpha, 0 if not. 
 */
 static char betterisalpha(char input){
-    return (input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z');
+    return isLower(input) || isupper(input);
 }
+static char ISALLCAPITAL(char* input, int length){
+    for(int i = 0; i < length; i++){
+        if(!isupper(input[i])) return 0;
+    }
+    return 1;
+}
+/**
+ * This is to check for capitalization tolerances.
+ * @arg a string from file
+ * @arg a string from tree
+ * @return 1 if string are same based on tolerances/ is a valid string
+ * @return 0 if strings are not the same.
+*/
+static char tolerancecmp(char* a, char* b){
+    unsigned int alength = strlen(a);
+    unsigned int blength = strlen(b);
+    if(alength != blength) return 0;
+    for(int i = 0; i < alength; i++){
+        if(isLower(a[i]) && isupper(b[i])) return 0;
+    }
+    if(ISALLCAPITAL(a,alength)) return 1;
 
+}
 /**
  * This function is intended to take a word with non alpha characters on the side, and trim it
  * @arg word - a word containing the trailing characters in the begginning and end.
@@ -55,36 +87,30 @@ static char* chopword(char* word) {
     if (!strlen(word)) {
         return NULL;
     }
-    //remove trialing stuff
+
+    //remove trailing stuff
     unsigned int R = strlen(word) - 1;
     unsigned int L = 0;
     while (!betterisalpha(word[L]) && L <= R) L++;
     while (!betterisalpha(word[R]) && L <= R) R--;
-    if(L > R){
+
+    if (L > R) {
         free(word);
         return NULL;
-
     }
-    printf("L = %d\tR = %d\n", L, R);
+
     memmove(word, word + L, ((R - L) + 1));
     word[(R - L) + 1] = '\0';
-    printf("newstring = %s\n", word);
-    //dealing with -
-    //pe-nis\0
-    //  i
+
+    // dealing with '-'
     unsigned int length = strlen(word);
-    for(int i = 0; word[i] != '\0'; i++){
-        if(word[i] == '-'){
-            memmove((word + i),(word + i + 1),(length - i));
+    for (int i = 0; word[i] != '\0'; i++) {
+        if (word[i] == '-') {
+            memmove((word + i), (word + i + 1), (length - i));
+            length--; // Adjusting length since we removed a character
+            i--; // Re-check the current index in case it's a hyphen
         }
     }
-    char* oldptr = word;
-    word = realloc(word,sizeof(char) * (strlen(word) + 1));
-    if(word == NULL){
-        free(oldptr);
-        exit(EXIT_FAILURE);
-    }
-    printf("%s has length %lu\n",word,strlen(word));
     return word;
 }
 
@@ -127,11 +153,6 @@ static char* getword() {
 
     }
 
-    // if (firstWord == 1) {
-    //     //printf value of colcount
-    //     *rowp = row;
-    //     *colwp = colcount+1;
-    // }
 
     int i = 0;
 
@@ -278,6 +299,10 @@ static char* getwordfordict() {
         exit(EXIT_FAILURE);
     }
     mystring = newstring;
+    newstring = chopword(mystring);
+    if(newstring == NULL){
+        exit(EXIT_FAILURE);
+    }
     return mystring;
 }
 
@@ -294,6 +319,12 @@ void parsedict(char* filepath){
     //int i = 0;
 
     while(mystring != NULL){
+        // char* temp = chopword(mystring);
+        // if(temp == NULL){
+        //     exit(EXIT_FAILURE);
+        // }
+        // mystring = temp;
+        mystring = chopword(mystring);
         put(mystring);
         free(mystring);
         mystring = getwordfordict();
@@ -323,6 +354,7 @@ void parsefile(char* filepath) {
     //while we are not at the end of the file (0 is provided when the file ends)
     while(mystring != NULL){
             //printf("correct string: %s\n",get(mystring));
+            char* treestring = get(mystring);
             if(!exists(mystring)){
 
                 printf("%s (row: %d,col: %d): %s\n",filepath, *rowp, *colwp, mystring);
