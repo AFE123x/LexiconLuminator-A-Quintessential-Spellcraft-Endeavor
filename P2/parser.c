@@ -37,6 +37,57 @@ short firstchar = 0;
 unsigned int *colwp = &colwrds;
 unsigned int *rowp = &activerow;
 
+/**
+ * A better isalpha implementation because the ctype one sucks. 
+ * @arg input: a character we want to check, if it's an alpha character
+ * @return 1 if character is alpha, 0 if not. 
+*/
+static char betterisalpha(char input){
+    return (input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z');
+}
+
+/**
+ * This function is intended to take a word with non alpha characters on the side, and trim it
+ * @arg word - a word containing the trailing characters in the begginning and end.
+ * @return trimmed down string, NULL if string contains no alpha characters
+*/
+static char* chopword(char* word) {
+    if (!strlen(word)) {
+        return NULL;
+    }
+    //remove trialing stuff
+    unsigned int R = strlen(word) - 1;
+    unsigned int L = 0;
+    while (!betterisalpha(word[L]) && L <= R) L++;
+    while (!betterisalpha(word[R]) && L <= R) R--;
+    if(L > R){
+        free(word);
+        return NULL;
+
+    }
+    printf("L = %d\tR = %d\n", L, R);
+    memmove(word, word + L, ((R - L) + 1));
+    word[(R - L) + 1] = '\0';
+    printf("newstring = %s\n", word);
+    //dealing with -
+    //pe-nis\0
+    //  i
+    unsigned int length = strlen(word);
+    for(int i = 0; word[i] != '\0'; i++){
+        if(word[i] == '-'){
+            memmove((word + i),(word + i + 1),(length - i));
+        }
+    }
+    char* oldptr = word;
+    word = realloc(word,sizeof(char) * (strlen(word) + 1));
+    if(word == NULL){
+        free(oldptr);
+        exit(EXIT_FAILURE);
+    }
+    printf("%s has length %lu\n",word,strlen(word));
+    return word;
+}
+
 
 //prints the string
 void printstring(char* buffer, int size){
@@ -45,6 +96,7 @@ void printstring(char* buffer, int size){
     }
     printf("\n");
 }
+
 
 
 //gets the word SPECIFICALLY for the parsefile function
@@ -62,7 +114,7 @@ static char* getword() {
         
         colcount++;
         //print the colcount
-        printf("first word col: %d\n", colcount);
+        // printf("first word col: %d\n", colcount);
         
         if (c[0] == ' ' || c[0] == '\n') {
             if (c[0] == '\n') {
@@ -84,7 +136,7 @@ static char* getword() {
     int i = 0;
 
         if (firstchar == 0) {
-            printf("row: %d col: %d\n", row, colcount);
+            // printf("row: %d col: %d\n", row, colcount);
             *colwp = colcount;
             *rowp = row;
             firstchar = 1;
@@ -99,7 +151,7 @@ static char* getword() {
         //     *colwp = colcount-1;
         //     veryfirst = 1;
         // }
-        printf("inside col: %d\n", colcount);
+        // printf("inside col: %d\n", colcount);
 
         
         //stores the value of the row for when characters are being read
