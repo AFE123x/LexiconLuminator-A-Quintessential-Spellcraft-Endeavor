@@ -142,7 +142,7 @@ static void destroy_helper(struct Node* curr){
     
 }
 void destroy(){
-    printf("Destroying at %p\n",head);
+    //printf("Destroying at %p\n",head);
     destroy_helper(head);
 }
 void put(char* word){

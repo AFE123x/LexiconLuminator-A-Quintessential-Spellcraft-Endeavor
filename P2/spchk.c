@@ -10,7 +10,9 @@
 #include "./parser.h"
 #include "./tries.h"
 
-
+//if a word is incorrect in ANY FILE, return EXIT_FAILURE
+// if 1 that means to exit with failure, if 0 that means exit with success
+short failExit = 0;
 
 //Error handling for cases with directory
 //Might include some for different file types
@@ -32,7 +34,7 @@ void PRINTERR(enum ERROR_CODES error, char *value, char *argv[]) {
             printf("Error: %s is not a file. Make sure your path is correct\n", value);
             break;
         case ARG_EMPTY:
-            printf("Error: The given argument(%s) is empty. You must provide an argument that is not empty\n", value);
+            printf("Error: The given argument(%s) is empty. Therefor nothing will be printed for this file\n", value);
             break;
         case DNE:
             printf("Error: The given argument(%s) does not exist. Make sure your path is correct\n", value);
@@ -140,7 +142,7 @@ void spellCheck(char *file) {
 
                     if (S_ISREG(buffer2.st_mode)) {
                         //printf("The current file is: %s\n", fullname);
-                        parsefile(fullname);
+                        failExit = parsefile(fullname);
                     }
 
                     
@@ -159,7 +161,7 @@ void spellCheck(char *file) {
     //I will not error handle for the possibility of the file being not a file
     if (S_ISREG(buffer.st_mode)) {
         //printf("The current file is: %s\n", file);
-        parsefile(file);
+        failExit = parsefile(file);
     }
 
 }
@@ -188,7 +190,7 @@ int main(int argc, char** argv) {
             DTE(argv[i+1]);
         }
         //print how many files there are
-        printf("There were %d files passed into the program. (counting the dictionary)\n", argc-1);
+        //printf("There were %d files passed into the program. (counting the dictionary)\n", argc-1);
 
         //parse the dictionary
         parsedict(argv[1]);
@@ -203,6 +205,12 @@ int main(int argc, char** argv) {
         }
         destroy();
 
+        if (failExit) {
+            exit(EXIT_FAILURE);
+
+        } else if (!failExit) {
+            exit(EXIT_SUCCESS);
+        }
         
     }
 

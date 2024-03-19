@@ -28,7 +28,12 @@ unsigned int colwrds = 1;
 unsigned int activerow = 1;
 
 //if a word is incorrect in ANY FILE, return EXIT_FAILURE
+// if 1 that means to exit with failure, if 0 that means exit with success
 short exitFailure = 0;
+
+//pointer that saves the exitFailure if it is one
+short saveExitMemory = 0;
+short *saveExit = &saveExitMemory;
 
 //have we hit the first char of the word?
 short firstchar = 0;
@@ -228,7 +233,7 @@ static char* getword() {
 
     //prints when we reach the end of a file
     if (i == 0) {
-        printf("---File Read Complete---\n");
+        //printf("---File Read Complete---\n");
         free(mystring);
         return NULL;
     }
@@ -291,7 +296,7 @@ static char* getwordfordict() {
         }
     }
     if (i == 0) {
-        printf("---Dict Read Complete---\n");
+        //printf("---Dict Read Complete---\n");
         free(mystring);
         return NULL;
     }
@@ -337,7 +342,7 @@ void parsedict(char* filepath){
 }
 
 // parses a file and checks each word against the trie
-void parsefile(char* filepath) {
+short parsefile(char* filepath) {
     //we want to separate each word in the file
     //we will use the space as the delimiter
     //pass each word into the trie for comparison
@@ -374,6 +379,11 @@ void parsefile(char* filepath) {
     *rowp = row;
     *colwp = colcount;
 
+    if (exitFailure) {
+        *saveExit = 1; 
+    }
+
+    return exitFailure = *saveExit;
 }
 
 
