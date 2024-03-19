@@ -133,7 +133,10 @@ static char* chopword(char* word) {
 }
 
 
-//prints the string
+/**
+ * prints the string of size n
+ * solely for troubleshooting
+*/
 void printstring(char* buffer, int size){
     for(int i = 0; i < size ; i++){
         printf("%c",buffer[i]);
