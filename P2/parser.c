@@ -48,11 +48,11 @@ unsigned int *rowp = &activerow;
 /**
  * 
 */
-static char isLower(char input){
+static char betterislower(char input){
     return input >= 'a' && input <= 'z';
 }
 
-static char isupper(char input){
+static char betterisupper(char input){
     return input >= 'A' && input <= 'Z';
 }
 /**
@@ -61,11 +61,11 @@ static char isupper(char input){
  * @return 1 if character is alpha, 0 if not. 
 */
 static char betterisalpha(char input){
-    return isLower(input) || isupper(input);
+    return betterislower(input) || betterisupper(input);
 }
 static char ISALLCAPITAL(char* input, int length){
     for(int i = 0; i < length; i++){
-        if(!isupper(input[i])) return 0;
+        if(!betterisupper(input[i]) && betterisalpha(input[i])) return 0;
     }
     return 1;
 }
@@ -77,13 +77,23 @@ static char ISALLCAPITAL(char* input, int length){
  * @return 0 if strings are not the same.
 */
 static char tolerancecmp(char* a, char* b){
+    // printf("a:%s\tb:%s\n",a,b);
+    if(b == NULL){
+        return 0;
+    }
     unsigned int alength = strlen(a);
     unsigned int blength = strlen(b);
     if(alength != blength) return 0;
     for(int i = 0; i < alength; i++){
-        if(isLower(a[i]) && isupper(b[i])) return 0;
+        if((betterislower(a[i]) && betterisupper(b[i])) && betterisalpha(a[i])){
+             return 0;
+        }
     }
     if(ISALLCAPITAL(a,alength)) return 1;
+    for(int i = 1; i < alength; i++){
+        if(betterisupper(a[i]) && betterislower(b[i]) && betterisalpha(a[i])) return 0;
+    }
+    return 1;
 
 }
 /**
@@ -131,9 +141,11 @@ void printstring(char* buffer, int size){
     printf("\n");
 }
 
-
-
-//gets the word SPECIFICALLY for the parsefile function
+/**
+ * This will parse a text file, and return a string, seperated by spaces
+ * and hyphens to bridge words together. 
+ * @return a string containing the word from a text file
+*/
 static char* getword() {
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
@@ -254,8 +266,7 @@ static char* getword() {
 
 //function that gets the word size for parsedict specifically
 //originally the parsedict and parsefile were using the same getword function
-//it was changed for column and row counting to work
-//DO NOT TOUCH
+//it was changed for column and                 
 static char* getwordfordict() {
     int initsize = 8;
     char* mystring = (char*)malloc(sizeof(char) * initsize);
@@ -316,6 +327,7 @@ static char* getwordfordict() {
 }
 
 
+
 //parses a dictionary file and adds each word to the trie
 void parsedict(char* filepath){
     fd = open(filepath,O_RDONLY);
@@ -365,8 +377,8 @@ short parsefile(char* filepath) {
     while(mystring != NULL){
             //printf("correct string: %s\n",get(mystring));
             char* treestring = get(mystring);
-            if(!exists(mystring)){
-
+            
+            if(!tolerancecmp(mystring,treestring)){
                 printf("%s (row: %d,col: %d): %s\n",filepath, *rowp, *colwp, mystring);
                 //printf("row: %d col: %d\n", row, colcount);
                 exitFailure = 1;

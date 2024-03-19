@@ -36,7 +36,7 @@ static struct Node* nodeconstructor(char* word){
 }
 static void tolowercase(char* a){
     for(int i = 0; a[i] != '\0'; i++){
-        if(a[i] >= 65 && a[i] < 90){
+        if(a[i] >= 'A' && a[i] < 'Z'){
             a[i] += 32;
         }
     }
@@ -70,7 +70,40 @@ static struct Node* RRotate(struct Node* curr){
     curr->left = saveboi;
     return newhead; // Return the new root of the subtree
 }
+static char betterislower(char a){
+    return a >= 'a' && a <= 'z';
+}
+/**
+ * This function will perform a character OR operation
+ * if upper | lower = lower
+ * +---+---+---+
+ * | U | L | L |
+ * +---+---+---+
+ * | L | U | L |
+ * +---+---+---+
+ * |L  | L | L |
+ * +---+---+---+
+ * | U | U | U |
+ * +---+---+---+
+ * @arg a tree string
+ * @arg b input string
+*/
+static char bettertolower(char a){
+    if((a >= 'A' && a <= 'Z')){
+        return a + 32;
+    }
+    return a;
+}
+void charor(char* a, char* b){
 
+    for(int i = 0; a[i] != '\0'; i++){
+        if(betterislower(a[i]) || betterislower(b[i])){
+            if(!betterislower(a[i])){
+                a[i] = bettertolower(a[i]);
+            }
+        }
+    }
+}
 static struct Node* put_helper(struct Node* curr, char* word){
     if(curr == NULL){
         return nodeconstructor(word);
@@ -82,6 +115,11 @@ static struct Node* put_helper(struct Node* curr, char* word){
     }
     else if(decision > 0){ //A > B
         curr->right = put_helper(curr->right,word);
+    }
+    else{
+        // printf("%s | %s = ",curr->data,word);
+        charor(curr->data,word);
+        // printf(" %s\n",curr->data);
     }
 
     curr->height = max(height(curr->left),height(curr->right)) + 1;

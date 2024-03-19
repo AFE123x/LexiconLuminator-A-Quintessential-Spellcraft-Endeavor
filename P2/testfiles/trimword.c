@@ -33,7 +33,6 @@ char* chopword(char* word) {
     memmove(word, word + L, ((R - L) + 1));
     word[(R - L) + 1] = '\0';
     printf("newstring = %s\n", word);
-    //dealing with -
     //pe-nis\0
     //  i
     unsigned int length = strlen(word);
